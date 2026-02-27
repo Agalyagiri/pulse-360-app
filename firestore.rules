@@ -1,0 +1,195 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * Pulse 360° Security Rules Documentation
+     *
+     * Core Philosophy:
+     * This ruleset implements a strict User-Ownership model. Most user data is nested within 
+     * user-specific subcollections, ensuring that authorization is primarily path-based 
+     * (e.g., /userProfiles/{userId}/...). This maximizes performance and minimizes the cost 
+     * of security checks by avoiding 'get()' calls.
+     *
+     * Data Structure:
+     * - /userProfiles/{userId}: Private user profiles and the root for all personal health data.
+     * - /doctors: Publicly readable directory of healthcare professionals.
+     * - /medicines: Publicly readable master list of medications.
+     * - Subcollections: Emergency contacts, menstrual cycles, dosage schedules, appointments, 
+     *   and medical records are kept private under the user's root profile.
+     *
+     * Key Security Decisions:
+     * 1. Path-Based Ownership: A user's UID (from request.auth) must match the {userProfileId} 
+     *    wildcard for any read or write access to personal data.
+     * 2. Denormalization for Authorization: Essential IDs (like userProfileId and doctorId) 
+     *    are enforced within document fields to ensure relational integrity and support 
+     *    Collection Group queries for doctors.
+     * 3. Public Read/Restricted Write: Global directories like Doctors and Medicines are 
+     *    readable by all authenticated users to facilitate app functionality, while writes 
+     *    are restricted to prevent data corruption.
+     * 4. Prototyping Mode: These rules focus strictly on authorization and relational 
+     *    consistency. Data types and full object shapes are not enforced to allow for 
+     *    rapid schema iteration.
+     */
+
+    // --- Helper Functions ---
+
+    /**
+     * @description Checks if the user is authenticated via Firebase Auth.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user's UID matches the provided userId.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Combines ownership check with existence check for updates and deletes.
+     */
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    /**
+     * @description Verifies that the internal ownership field matches the path identifier.
+     * Used during creation to ensure data consistency.
+     */
+    function matchesPath(fieldValue, pathValue) {
+      return fieldValue == pathValue;
+    }
+
+    /**
+     * @description Enforces immutability on a specific field during an update.
+     */
+    function isImmutable(fieldName) {
+      return request.resource.data[fieldName] == resource.data[fieldName];
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for the primary User Profile document.
+     * @path /userProfiles/{userProfileId}
+     * @allow (get, list, create, update) if UID matches {userProfileId}.
+     * @deny (delete) users cannot self-delete via client for record retention.
+     * @principle Self-creation and ownership.
+     */
+    match /userProfiles/{userProfileId} {
+      allow get, list: if isOwner(userProfileId);
+      allow create: if isOwner(userProfileId) && matchesPath(request.resource.data.id, userProfileId);
+      allow update: if isExistingOwner(userProfileId) && isImmutable('id');
+      allow delete: if false; // Retention policy: profiles cannot be deleted by users.
+
+      /**
+       * @description Rules for private emergency contacts.
+       * @path /userProfiles/{userProfileId}/emergencyContacts/{contactId}
+       * @allow (all) if user owns the parent profile.
+       * @deny (all) if UID does not match parent path.
+       * @principle Path-based subcollection ownership.
+       */
+      match /emergencyContacts/{emergencyContactId} {
+        allow get, list: if isOwner(userProfileId);
+        allow create: if isOwner(userProfileId) && matchesPath(request.resource.data.userProfileId, userProfileId);
+        allow update: if isExistingOwner(userProfileId) && isImmutable('userProfileId');
+        allow delete: if isExistingOwner(userProfileId);
+      }
+
+      /**
+       * @description Rules for menstrual cycle tracking.
+       * @path /userProfiles/{userProfileId}/cycles/{cycleId}
+       * @allow (all) if user owns the parent profile.
+       * @principle Path-based subcollection ownership.
+       */
+      match /cycles/{cycleId} {
+        allow get, list: if isOwner(userProfileId);
+        allow create: if isOwner(userProfileId) && matchesPath(request.resource.data.userProfileId, userProfileId);
+        allow update: if isExistingOwner(userProfileId) && isImmutable('userProfileId');
+        allow delete: if isExistingOwner(userProfileId);
+      }
+
+      /**
+       * @description Rules for medicine dosage schedules.
+       * @path /userProfiles/{userProfileId}/dosageSchedules/{dosageScheduleId}
+       * @allow (all) if user owns the parent profile.
+       * @principle Path-based subcollection ownership.
+       */
+      match /dosageSchedules/{dosageScheduleId} {
+        allow get, list: if isOwner(userProfileId);
+        allow create: if isOwner(userProfileId) && matchesPath(request.resource.data.userProfileId, userProfileId);
+        allow update: if isExistingOwner(userProfileId) && isImmutable('userProfileId');
+        allow delete: if isExistingOwner(userProfileId);
+      }
+
+      /**
+       * @description Rules for appointments. Users manage their subcollection.
+       * Doctors can read specific appointments via Collection Group rules below.
+       * @path /userProfiles/{userProfileId}/appointments/{appointmentId}
+       * @allow (all) if user owns the parent profile.
+       * @principle Path-based ownership + Relationship denormalization.
+       */
+      match /appointments/{appointmentId} {
+        allow get, list: if isOwner(userProfileId);
+        allow create: if isOwner(userProfileId) && matchesPath(request.resource.data.userProfileId, userProfileId);
+        allow update: if isExistingOwner(userProfileId) && isImmutable('userProfileId');
+        allow delete: if isExistingOwner(userProfileId);
+      }
+
+      /**
+       * @description Rules for sensitive medical records and uploads.
+       * @path /userProfiles/{userProfileId}/medicalRecords/{medicalRecordId}
+       * @allow (all) if user owns the parent profile.
+       * @principle Path-based subcollection ownership.
+       */
+      match /medicalRecords/{medicalRecordId} {
+        allow get, list: if isOwner(userProfileId);
+        allow create: if isOwner(userProfileId) && matchesPath(request.resource.data.userProfileId, userProfileId);
+        allow update: if isExistingOwner(userProfileId) && isImmutable('userProfileId');
+        allow delete: if isExistingOwner(userProfileId);
+      }
+    }
+
+    /**
+     * @description Global list of Doctors. Publicly readable for selection.
+     * Doctors can manage their own profile if they are users.
+     * @path /doctors/{doctorId}
+     * @allow (get, list) if signed in.
+     * @allow (write) if the authenticated user's UID matches the {doctorId}.
+     * @principle Public Read with Owner-Only Writes.
+     */
+    match /doctors/{doctorId} {
+      allow get, list: if isSignedIn();
+      allow create: if isOwner(doctorId) && matchesPath(request.resource.data.id, doctorId);
+      allow update: if isExistingOwner(doctorId) && isImmutable('id');
+      allow delete: if false; // Admin-only action.
+    }
+
+    /**
+     * @description Master directory of Medicines. Read-only for standard users.
+     * @path /medicines/{medicineId}
+     * @allow (get, list) if signed in.
+     * @deny (write) Restricted to system administrators.
+     * @principle Global master data management.
+     */
+    match /medicines/{medicineId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if false; // TODO: Implement admin role check.
+    }
+
+    // --- Collection Group Rules ---
+
+    /**
+     * @description Allows doctors to find appointments assigned to them across all users.
+     * @path /.../appointments/{appointmentId}
+     * @allow (get, list) if the doctor's UID matches the 'doctorId' field.
+     * @principle Role-based access via denormalization and Collection Group queries.
+     */
+    match /{path=**}/appointments/{appointmentId} {
+      allow get, list: if isSignedIn() && resource.data.doctorId == request.auth.uid;
+    }
+  }
+}

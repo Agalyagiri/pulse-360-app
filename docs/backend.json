@@ -1,0 +1,536 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's personal profile information within the Pulse 360° application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user, used for communication.",
+          "format": "email"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "The user's date of birth.",
+          "format": "date"
+        },
+        "gender": {
+          "type": "string",
+          "description": "The gender of the user (e.g., 'Male', 'Female', 'Non-binary', 'Prefer not to say')."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The contact phone number of the user."
+        },
+        "address": {
+          "type": "string",
+          "description": "The residential address of the user."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "dateOfBirth",
+        "gender"
+      ]
+    },
+    "Doctor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Doctor",
+      "type": "object",
+      "description": "Represents a healthcare professional available for appointments and related medical records.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Doctor entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the doctor."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the doctor."
+        },
+        "specialization": {
+          "type": "string",
+          "description": "The medical specialization of the doctor (e.g., 'Cardiologist', 'Pediatrician')."
+        },
+        "contactNumber": {
+          "type": "string",
+          "description": "The contact phone number for the doctor or their clinic."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the doctor.",
+          "format": "email"
+        },
+        "clinicAddress": {
+          "type": "string",
+          "description": "The address of the doctor's primary clinic."
+        },
+        "hospitalAffiliation": {
+          "type": "string",
+          "description": "The name of the hospital or institution the doctor is affiliated with."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "specialization"
+      ]
+    },
+    "EmergencyContact": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "EmergencyContact",
+      "type": "object",
+      "description": "Stores information about a user's designated emergency contacts for the SOS feature.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the EmergencyContact entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to the UserProfile this contact belongs to. (Relationship: UserProfile 1:N EmergencyContact)"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the emergency contact."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the emergency contact."
+        },
+        "relationship": {
+          "type": "string",
+          "description": "The relationship of the contact to the user (e.g., 'Mother', 'Spouse', 'Friend')."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The contact phone number for the emergency contact."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the emergency contact.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "firstName",
+        "lastName",
+        "relationship",
+        "phoneNumber"
+      ]
+    },
+    "Cycle": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Cycle",
+      "type": "object",
+      "description": "Records details of a user's menstrual cycle for the Period Tracker feature, including dates and predictions.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Cycle entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to the UserProfile to whom this cycle belongs. (Relationship: UserProfile 1:N Cycle)"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the menstrual period.",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the menstrual period.",
+          "format": "date"
+        },
+        "expectedEndDate": {
+          "type": "string",
+          "description": "The predicted end date of the menstrual period, used for cycle prediction.",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes related to this specific cycle."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "startDate",
+        "endDate"
+      ]
+    },
+    "Medicine": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Medicine",
+      "type": "object",
+      "description": "Contains general information about a specific medication.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Medicine entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The common or brand name of the medicine."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description or purpose of the medicine."
+        },
+        "dosageUnit": {
+          "type": "string",
+          "description": "The unit of dosage for the medicine (e.g., 'mg', 'pill', 'ml')."
+        },
+        "manufacturer": {
+          "type": "string",
+          "description": "The manufacturer of the medicine."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "dosageUnit"
+      ]
+    },
+    "DosageSchedule": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DosageSchedule",
+      "type": "object",
+      "description": "Defines a user's personalized schedule for taking a specific medicine, part of the Medicine Reminder feature.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the DosageSchedule entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to the UserProfile taking this medicine. (Relationship: UserProfile 1:N DosageSchedule)"
+        },
+        "medicineId": {
+          "type": "string",
+          "description": "Reference to the Medicine being scheduled. (Relationship: Medicine 1:N DosageSchedule)"
+        },
+        "dosageAmount": {
+          "type": "number",
+          "description": "The quantity of the medicine to be taken per dose (e.g., '2' for 2 pills)."
+        },
+        "frequency": {
+          "type": "string",
+          "description": "How often the medicine should be taken (e.g., 'daily', 'twice a day', 'every 8 hours')."
+        },
+        "reminderTimes": {
+          "type": "array",
+          "description": "An array of specific times of day (e.g., ['08:00', '20:00']) for reminders.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The date when this dosage schedule begins.",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The optional date when this dosage schedule ends (for finite courses).",
+          "format": "date"
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Indicates if this medicine reminder schedule is currently active."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes or instructions for this specific dosage schedule."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "medicineId",
+        "dosageAmount",
+        "frequency",
+        "reminderTimes",
+        "startDate",
+        "isActive"
+      ]
+    },
+    "Appointment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Appointment",
+      "type": "object",
+      "description": "Stores details about a doctor's appointment, including booking and history.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Appointment entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to the UserProfile who booked the appointment. (Relationship: UserProfile 1:N Appointment)"
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "Reference to the Doctor for this appointment. (Relationship: Doctor 1:N Appointment)"
+        },
+        "appointmentDateTime": {
+          "type": "string",
+          "description": "The date and time of the appointment.",
+          "format": "date-time"
+        },
+        "reasonForVisit": {
+          "type": "string",
+          "description": "The user's stated reason for scheduling the appointment."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the appointment (e.g., 'Scheduled', 'Completed', 'Cancelled')."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes related to the appointment."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "doctorId",
+        "appointmentDateTime",
+        "reasonForVisit",
+        "status"
+      ]
+    },
+    "MedicalRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MedicalRecord",
+      "type": "object",
+      "description": "Manages various types of medical reports and health documents for a user, serving as patient history and health records.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MedicalRecord entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to the UserProfile to whom this record belongs. (Relationship: UserProfile 1:N MedicalRecord)"
+        },
+        "recordType": {
+          "type": "string",
+          "description": "The category of the medical record (e.g., 'Diagnosis', 'Lab Result', 'Prescription', 'Scan Report', 'Treatment Note')."
+        },
+        "title": {
+          "type": "string",
+          "description": "A concise title for the medical record (e.g., 'Annual Check-up', 'Blood Test Results')."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed notes, diagnosis, or summary of the medical record content."
+        },
+        "recordDate": {
+          "type": "string",
+          "description": "The date when the medical record was created or pertains to.",
+          "format": "date"
+        },
+        "documentUrl": {
+          "type": "string",
+          "description": "An optional URL pointing to an uploaded digital document (e.g., PDF, image) for this record.",
+          "format": "uri"
+        },
+        "associatedDoctorId": {
+          "type": "string",
+          "description": "Optional reference to the Doctor associated with this medical record. (Relationship: Doctor 0..1:N MedicalRecord)"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "recordType",
+        "title",
+        "recordDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/userProfiles/{userProfileId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores individual user profile data. Each document's ID corresponds to the user's Firebase Authentication UID. This structure ensures direct path-based authorization, meaning only the authenticated user (request.auth.uid) can read or modify their own profile. The 'id' field within the UserProfile entity is implicitly denormalized by the document ID, facilitating Authorization Independence and simple security rules.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier of the user (Firebase Auth UID) who owns this profile."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/userProfiles/{userProfileId}/emergencyContacts/{emergencyContactId}",
+        "definition": {
+          "entityName": "EmergencyContact",
+          "schema": {
+            "$ref": "#/backend/entities/EmergencyContact"
+          },
+          "description": "Contains emergency contact information specific to a user. Stored as a subcollection under the respective user's profile to enforce strict ownership. The parent 'userProfileId' in the path serves as the denormalized authorization context, removing the need for 'get()' calls in rules. Supports secure list operations (QAPs) as only the owning user can list their contacts.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier of the user (Firebase Auth UID) who owns these emergency contacts."
+            },
+            {
+              "name": "emergencyContactId",
+              "description": "The unique identifier for an emergency contact document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/userProfiles/{userProfileId}/cycles/{cycleId}",
+        "definition": {
+          "entityName": "Cycle",
+          "schema": {
+            "$ref": "#/backend/entities/Cycle"
+          },
+          "description": "Records menstrual cycle data for individual users. Nested under the user's profile to ensure private and user-specific access. Authorization is path-based, with 'userProfileId' in the path acting as the denormalized owner ID. This enables atomic operations and secure listing for individual users without complex rule dependencies.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier of the user (Firebase Auth UID) who owns this cycle data."
+            },
+            {
+              "name": "cycleId",
+              "description": "The unique identifier for a menstrual cycle entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/userProfiles/{userProfileId}/dosageSchedules/{dosageScheduleId}",
+        "definition": {
+          "entityName": "DosageSchedule",
+          "schema": {
+            "$ref": "#/backend/entities/DosageSchedule"
+          },
+          "description": "Manages personalized medicine dosage schedules for each user. This subcollection structure guarantees that only the owning user can access their schedules. 'userProfileId' in the path serves as the authorization key, eliminating cross-document reads in security rules and facilitating secure list queries.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier of the user (Firebase Auth UID) who owns this dosage schedule."
+            },
+            {
+              "name": "dosageScheduleId",
+              "description": "The unique identifier for a dosage schedule document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/userProfiles/{userProfileId}/appointments/{appointmentId}",
+        "definition": {
+          "entityName": "Appointment",
+          "schema": {
+            "$ref": "#/backend/entities/Appointment"
+          },
+          "description": "Stores appointment details for a user. The user's access is secured by the 'userProfileId' in the path. For doctor access, the 'doctorId' field (already present in the schema) is denormalized within the document itself. This allows doctors to securely query and read appointments where 'resource.data.doctorId' matches their UID via a collection group query, without requiring 'get()' calls for authorization.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier of the user (Firebase Auth UID) who booked this appointment."
+            },
+            {
+              "name": "appointmentId",
+              "description": "The unique identifier for an appointment document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/userProfiles/{userProfileId}/medicalRecords/{medicalRecordId}",
+        "definition": {
+          "entityName": "MedicalRecord",
+          "schema": {
+            "$ref": "#/backend/entities/MedicalRecord"
+          },
+          "description": "Holds sensitive medical records and health documents for each user. The hierarchical path with 'userProfileId' ensures robust, private ownership and access control. This structure supports secure list operations for a user's own records, preventing unauthorized data exposure and eliminating rule dependencies.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier of the user (Firebase Auth UID) who owns this medical record."
+            },
+            {
+              "name": "medicalRecordId",
+              "description": "The unique identifier for a medical record document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/doctors/{doctorId}",
+        "definition": {
+          "entityName": "Doctor",
+          "schema": {
+            "$ref": "#/backend/entities/Doctor"
+          },
+          "description": "Contains profiles of healthcare professionals. Documents are publicly readable to allow users to browse and select doctors. Write access is restricted to administrators (via a separate role collection, if available) or potentially the doctor themselves (if doctorId matches their UID). The 'id' field within the Doctor entity is implicitly denormalized by the document ID for direct access, and if it matches a doctor's UID, it allows the doctor to manage their own profile.",
+          "params": [
+            {
+              "name": "doctorId",
+              "description": "The unique identifier for a doctor. If the doctor uses the app, this should correspond to their Firebase Auth UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/medicines/{medicineId}",
+        "definition": {
+          "entityName": "Medicine",
+          "schema": {
+            "$ref": "#/backend/entities/Medicine"
+          },
+          "description": "A master list of general medicine information. This collection is globally readable by all authenticated users to allow selection when setting up dosage schedules. Write access is restricted to administrators to maintain data integrity and consistency, following Structural Segregation for global, shared data.",
+          "params": [
+            {
+              "name": "medicineId",
+              "description": "The unique identifier for a medicine document."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure for Pulse 360° is designed to prioritize security, scalability, and debuggability, adhering strictly to the provided CORE DESIGN PRINCIPLES and DESIGN STRATEGY MANDATES.\n\n1.  **Authorization Independence (CRITICAL) & Denormalization:**\n    The core strategy for Authorization Independence is implemented through a combination of path-based ownership and strategic denormalization.\n    *   **User-Owned Data:** All personal user data (e.g., EmergencyContact, Cycle, DosageSchedule, Appointment, MedicalRecord) is nested directly under `/userProfiles/{userProfileId}`. This makes the `userProfileId` (which directly corresponds to `request.auth.uid`) the primary authorization context. Security rules can directly compare `request.auth.uid` with the `{userProfileId}` wildcard in the path, ensuring that users can only access their own data without needing `get()` calls to parent documents. For instance, an `EmergencyContact` document's `userProfileId` field is implicitly denormalized by its path (`/userProfiles/{userId}/emergencyContacts/{contactId}`), removing rule dependencies.\n    *   **Collaborative Data (Appointments):** For `Appointment` documents, while primarily owned by the user (secured by `userProfileId` in the path), doctors also need to access *their* specific appointments. The `doctorId` field is explicitly denormalized within the `Appointment` document itself. This allows doctors to securely query their appointments using collection group queries (`collectionGroup('appointments').where('doctorId', '==', request.auth.uid)`) without performing `get()` operations for authorization in security rules.\n\n2.  **Clarity of Intent (Debuggability):**\n    The collection paths are semantically clear, explicitly indicating ownership and data scope. For example, `/userProfiles/{userProfileId}/medicalRecords/{medicalRecordId}` immediately conveys that these are medical records belonging to a specific user. This structural clarity simplifies the writing and debugging of security rules, as access patterns are visually evident in the paths.\n\n3.  **DBAC (No Custom Claims) & Global Roles:**\n    Authorization relies solely on `request.auth.uid`.\n    *   **User Ownership:** For user-specific data, `request.auth.uid` directly matches the `{userProfileId}` wildcard.\n    *   **Doctor Access:** Doctors can read/list their appointments by checking `request.auth.uid == resource.data.doctorId`.\n    *   **Global Data (Doctors, Medicines):** The `/doctors` and `/medicines` collections are designed to be publicly readable by authenticated users for browsing and selection. Write access would typically be restricted to administrators.\n    *   **Admin Role Limitation:** A specific collection for global administrator roles (e.g., `/roles_admin/{adminId}`) could not be directly modeled using the provided `backend.entities` because no `Role` entity was supplied. To implement explicit admin roles via the 'Existence over Content' principle, a `Role` entity would need to be defined in the application's backend entities, or a suitable existing entity would need to be repurposed (which could violate Structural Segregation). This limitation prevents a fully compliant DBAC solution for global roles within the current schema constraints.\n\n4.  **QAPs (Rules are not Filters):**\n    The structure enables efficient and secure `list` operations without relying on security rules to filter results, which is an anti-pattern.\n    *   **User-Owned Subcollections:** For collections like `emergencyContacts`, `cycles`, `dosageSchedules`, `appointments`, and `medicalRecords`, `list` operations are implicitly secure. A user querying `/userProfiles/myUid/emergencyContacts` can only ever list *their own* contacts because `myUid` must match `request.auth.uid`.\n    *   **Global Collections:** `/doctors` and `/medicines` are designed for broad `list` access (e.g., by all authenticated users) or specific `list` access (e.g., by admins), with rules explicitly granting or denying based on the request.\n    *   **Doctor-specific Appointments:** Doctors can securely `list` their appointments using a collection group query on `appointments` filtered by `doctorId`. The security rule would ensure that `request.auth.uid` matches the `doctorId` field in the document, effectively providing a secure and performant list for doctors.\n\n5.  **Structural Segregation:**\n    Data is organized into collections based on its security posture.\n    *   User-specific and private data is confined to subcollections under `/userProfiles/{userProfileId}`.\n    *   Publicly browsable (but admin-manageable) master data like `/doctors` and `/medicines` resides in root-level collections, ensuring all documents within these collections share the same general access requirements. This minimizes complexity in security rules.\n\n6.  **Access Modeling:**\n    *   **Private Data:** Primarily uses Path-Based ownership (`/userProfiles/{userProfileId}/...`).\n    *   **Hierarchical Paths:** Continues for nested `1:N` relationships (e.g., `UserProfile 1:N EmergencyContact` becomes `/userProfiles/{userProfileId}/emergencyContacts/{contactId}`).\n    *   **Global Data:** Root-level collections (`/doctors`, `/medicines`) are used for shared, master data.\n\nThis design strategy ensures a robust, maintainable, and secure Firestore database for Pulse 360°."
+  }
+}
